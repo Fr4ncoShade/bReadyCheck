@@ -16,7 +16,9 @@ Run a standard ready check using the command:
 This will automatically open the window showing buff status for all raid members.  
   
 To open the buff check window manually (without starting a ready check), use:  
-`/brc`
+`/brc`  
+
+To close the buff check window, simply right-click anywhere on the frame.  
   
 ## **Development Status & Feedback**   
 The addon is currently in active development (beta version).  
