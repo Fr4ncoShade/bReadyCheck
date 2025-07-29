@@ -561,6 +561,19 @@ function CreateFullIcon(parent, texturePath, size)
 		GameTooltip_Hide()
 	end)
 	
+	icon:SetScript("OnMouseDown", function(self, button)
+		if button == "RightButton" then
+			local parent = self
+			while parent and parent.GetParent do
+				if parent:GetName() == "bReadyCheckFrame" then
+					parent:Hide()
+					break
+				end
+				parent = parent:GetParent()
+			end
+		end
+	end)
+	
 	-- текст в правом нижнем углу (уровень заклинания)
 	icon.text = icon:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	icon.text:SetPoint("BOTTOMRIGHT", 4, 0)
@@ -585,6 +598,7 @@ function CreateFullIcon(parent, texturePath, size)
 	icon.subIcon:Hide()
 
 	return icon
+	
 end
 	
 local function CreateCol(line, key, i)
