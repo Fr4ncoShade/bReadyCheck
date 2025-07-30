@@ -16,6 +16,7 @@ local defaults = {
 		
 		fontKey = "default", 
 		fontPath = "Interface\\AddOns\\bReadyCheck\\media\\fonts\\skurri.ttf", 
+		fontSize = 12,
 		sortByClass = false,	
 	}
 }

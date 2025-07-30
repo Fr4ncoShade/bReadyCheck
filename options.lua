@@ -210,7 +210,7 @@ function bReadyCheck:RegisterOptions()
 			
 			flaskExpireOption = {
 				type = "select",
-				--name = "Показывать истекающие фласки",
+				--name = "Показывать заканчивающиеся фласки",
 				name = L["MinFlaskExp"],
 				desc = L["MinFlaskExpDesc"],
 				--desc = "Выберите, за сколько минут до окончания фласок показывать предупреждение",
@@ -248,6 +248,18 @@ function bReadyCheck:RegisterOptions()
 				width = "full",
 				order = 6,
 			},
+			
+			spacerFonts = {
+				type = "description",
+				name = "\n",
+				order = 7,
+			},
+			
+			fontHeader = {
+				type = "header",
+				name = L["FontSettings"],
+				order = 8,
+			},
 
 			fontSelect = {
 				type = "select",
@@ -267,8 +279,27 @@ function bReadyCheck:RegisterOptions()
 					bReadyCheck:UpdateFont()
 				end,
 				width = "full",
-				order = 7,
+				order = 9,
 			},
+			
+			fontSize = {
+				type = "range",
+				name = L["FontSize"],
+				--desc = L["FontSizeDesc"],
+				min = 8,
+				max = 32,
+				step = 1,
+				get = function()
+					return bReadyCheck.db.profile.fontSize or 12
+				end,
+				set = function(_, val)
+					bReadyCheck.db.profile.fontSize = val
+					bReadyCheck:UpdateFont()
+				end,
+				width = "full",
+				order = 10,
+			},
+
         },
     }
 

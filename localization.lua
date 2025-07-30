@@ -22,6 +22,8 @@ if L then
 	L["SortByClass"] = "Sort by class"
 	L["SortByClassDesc"] = "Players will be sorted by class"
 	L["NeedGroupOrRaid"] = "You have to be in a party or raid"
+	L["FontSize"] = "Font size"
+	L["FontSettings"] = "Font"
 	
 end
 --[[

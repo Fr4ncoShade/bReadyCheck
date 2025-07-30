@@ -734,7 +734,8 @@ function bReadyCheck:UpdateFont()
 		end
 	end
 	if frame.headText then
-		frame.headText:SetFont(fontPath, 16, "OUTLINE")
+		--frame.headText:SetFont(fontPath, 16, "OUTLINE")
+		frame.headText:SetFont(fontPath, fontSize + 4, "OUTLINE")
 	end
 end
 
@@ -1229,8 +1230,8 @@ function bReadyCheck:UpdateData(onlyLine)
 						if expirationTime then
 							local timeLeft = expirationTime - GetTime()
 							if timeLeft < 600 then -- 600 секунд = 10 минут
-								line[key].texture:SetAlpha(0.5)
-								line[key].text:SetAlpha(0.5)
+								line[key].texture:SetAlpha(0.6)
+								line[key].text:SetAlpha(0.6)
 							else
 								line[key].texture:SetAlpha(1)
 								line[key].text:SetAlpha(1)
