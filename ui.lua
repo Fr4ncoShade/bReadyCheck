@@ -362,7 +362,7 @@ function bReadyCheck:CreateMainFrame()
 	self.buffFrame.headText = self.buffFrame:CreateFontString(nil, "OVERLAY")
 	self.buffFrame.headText:SetPoint("TOP", 0, -3)
 	self.buffFrame.headText:SetTextColor(1,0.66,0,1)
-	self.buffFrame.headText:SetFont("Interface\\AddOns\\bReadyCheck\\media\\fonts\\skurri.ttf", 16, "OUTLINE")
+	self.buffFrame.headText:SetFont("Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf", 16, "OUTLINE")
 	--self.buffFrame.headText:SetText("Проверка готовности")
 	self.buffFrame.headText:SetText(L["READY_CHECK"])
 	
@@ -405,6 +405,17 @@ function bReadyCheck:CreateMainFrame()
 
 	self:CreateFadeOutAnimation(frame)
 	frame:Hide()
+end
+
+--
+function bReadyCheck:ClearHeadTextTimer()
+	if self.buffFrame and self.buffFrame.headText then
+		local text = self.buffFrame.headText:GetText()
+		if text then
+			text = text:gsub("%s*%b()", ""):gsub("%s+$", "")
+			self.buffFrame.headText:SetText(text)
+		end
+	end
 end
 
 function bReadyCheck:CleanupMainFrame()
@@ -557,9 +568,7 @@ function CreateFullIcon(parent, texturePath, size)
 		end
 	end)
 
-	icon:SetScript("OnLeave", function()
-		GameTooltip_Hide()
-	end)
+	icon:SetScript("OnLeave", BRD_LineOnLeave)
 	
 	icon:SetScript("OnMouseDown", function(self, button)
 		if button == "RightButton" then
@@ -717,7 +726,7 @@ function bReadyCheck:UpdateFont()
 
 	local fontKey = self.db.profile.fontKey or "default"
 	--local fontPath = self.db.profile.fontPath or "Fonts\\FRIZQT__.TTF"
-	local fontPath = self.db.profile.fontPath or "Interface\\AddOns\\bReadyCheck\\media\\fonts\\skurri.ttf"
+	local fontPath = self.db.profile.fontPath or "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf"
 	local fontSize = self.db.profile.fontSize or 12
 
 	for i = 1, 40 do
@@ -775,13 +784,13 @@ function bReadyCheck:CreateTimeLine()
 	line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
 
 	-- количество подтвердивших
-	line.time = line:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	line.time:SetPoint("TOPLEFT", line, "TOPLEFT", 5, -34)
-	line.time:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	line.time:SetText("40")
-	line.time:SetTextColor(1, 1, 1)
-	line.time:SetShadowOffset(1, -1)
-	line.time:Hide()
+	line.readyCount = line:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	line.readyCount:SetPoint("TOPLEFT", line, "TOPLEFT", 5, -34)
+	line.readyCount:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	line.readyCount:SetText("40")
+	line.readyCount:SetTextColor(1, 1, 1)
+	line.readyCount:SetShadowOffset(1, -1)
+	line.readyCount:Hide()
 
 	local currR,currG,currB = 1,.2,.2
 
@@ -816,7 +825,7 @@ function bReadyCheck:CreateTimeLine()
 		end_time = GetTime() + timer
 		duration = timer
 
-		line.time:SetText("")
+		line.readyCount:SetText("")
 		line.back:SetTexture(cR1,cG1,cB1)
 		line.back2:SetGradientAlpha("HORIZONTAL",cR1,cG1,cB1,1,cR1,cG1,cB1,0)
 		line.back:SetWidth(WIDTH - WIDTH2)
@@ -825,14 +834,14 @@ function bReadyCheck:CreateTimeLine()
 
 		line.anim_alpha:Stop()
 		line:SetAlpha(1)
-		line.time:SetAlpha(1)
+		line.readyCount:SetAlpha(1)
 		stop = nil
 		self:Show()
-		self.time:Show()
+		self.readyCount:Show()
 	end
 		
 	line:SetScript("OnHide",function(self)
-		line.time:Hide()
+		line.readyCount:Hide()
 	end)
 		
 	line.anim_alpha = line:CreateAnimationGroup()
@@ -840,7 +849,7 @@ function bReadyCheck:CreateTimeLine()
 	line.anim_alpha.color:SetDuration(1)
 	line.anim_alpha.color:SetScript("OnUpdate", function(self,elapsed) 
 		line:SetAlpha(1 - self:GetProgress())
-		line.time:SetAlpha(1 - self:GetProgress())
+		line.readyCount:SetAlpha(1 - self:GetProgress())
 	end)
 		
 	line.anim_alpha.color:SetScript("OnFinished", function()
@@ -874,7 +883,7 @@ function bReadyCheck:CreateTimeLine()
 	line.SetProgress = function(self,total,totalResponced)
 		local progress = totalResponced / max(total,1)
 		if progress == 0 then
-			self.time:SetText(totalResponced.."/"..total)
+			self.readyCount:SetText(totalResponced.."/"..total)
 			return
 		end
 		local fR,fG,fB
@@ -889,7 +898,7 @@ function bReadyCheck:CreateTimeLine()
 			progress = progress * (1 / 0.66)
 		end
 		--self.time:SetText(progress < 1 and totalResponced.."/"..total or "")
-		self.time:SetText(totalResponced.."/"..total)
+		self.readyCount:SetText(totalResponced.."/"..total)
 
 		local r,g,b = fR - (fR - tR) * progress,fG - (fG - tG) * progress,fB - (fB - tB) * progress
 		self:Color(r,g,b)
@@ -1290,7 +1299,8 @@ function bReadyCheck:ReadyCheckWindow(starter, manual)
     if not frame then
         return
     end
-
+	
+	self:CleanupMainFrame()
 	self:CreateTimeLine()
 	self:CreateLines()
     self.RaidCheckReadyCheckTime = nil

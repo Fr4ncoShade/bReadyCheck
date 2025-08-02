@@ -75,7 +75,7 @@ function bReadyCheck:RegisterOptions()
 		elseif key == "FiraSansMedium" then return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\FiraSansMedium.ttf"
 		elseif key == "ariblk" then return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\ariblk.ttf"
 		elseif key == "alphapixels" then return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\alphapixels.ttf"
-		elseif key == "default" then return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\skurri.ttf"
+		elseif key == "default" then return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf"
 	end
 
 		if bReadyCheck.LSM then
@@ -85,7 +85,7 @@ function bReadyCheck:RegisterOptions()
 			end
 		end
 
-		return "Interface\\AddOns\\bReadyCheck\\media\\skurri.ttf"
+		return "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf"
 	end
 
 	local function GetEnabledText()

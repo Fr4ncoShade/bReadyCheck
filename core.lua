@@ -15,7 +15,7 @@ local defaults = {
 		ReadyCheckFadeDelay = 10,
 		
 		fontKey = "default", 
-		fontPath = "Interface\\AddOns\\bReadyCheck\\media\\fonts\\skurri.ttf", 
+		fontPath = "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf", 
 		fontSize = 12,
 		sortByClass = false,	
 	}
@@ -58,6 +58,8 @@ function bReadyCheck:SlashCommand(input)
 		frame:Show()
 
 		-- скрытие таймера
+		self:ClearHeadTextTimer()
+--[[
 		if frame.headText then
 			local text = frame.headText:GetText()
 			if text then
@@ -65,7 +67,7 @@ function bReadyCheck:SlashCommand(input)
 				frame.headText:SetText(text)
 			end
 		end
-
+]]
 		self.buffFrame:Show()
 		self:CreateLines()
 		self:CreateIconHeaders()
