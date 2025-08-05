@@ -10,7 +10,8 @@ local defaults = {
 	profile = {
 		enabled = true,
 		onlyForRL = false,
-		scale = 1,
+		showSourceName = false,
+		scale = 0.8,
 		flaskExpireOption = 0,
 		ReadyCheckFadeDelay = 10,
 		

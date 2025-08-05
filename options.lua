@@ -98,210 +98,234 @@ function bReadyCheck:RegisterOptions()
 	local options = {
 		type = "group",
 		name = "bReadyCheck",
+		childGroups = "tab",
 		args = {
-			header = {
-				type = "header",
-				--name = "General Settings",
+
+--1=============================================
+			General = {
+				type = "group",
 				name = L["General Settings"],
-				order = 0,
-			},
-
-			enabled = {
-				type = "toggle",
-				name = GetEnabledText,
-				--desc = "Включить/выключить функциональность аддона",
-				desc = L["EnableDesc"],
-				get = function()
-					return bReadyCheck.db.profile.enabled
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.enabled = val
-
-					if val then
-						bReadyCheck:RegisterEvent("READY_CHECK", "OnReadyCheck")
-						bReadyCheck:RegisterEvent("READY_CHECK_FINISHED", "OnReadyCheckFinished")
-						bReadyCheck:RegisterEvent("READY_CHECK_CONFIRM", "OnReadyCheckConfirm")
-					else
-
-						bReadyCheck:UnregisterEvent("READY_CHECK")
-						bReadyCheck:UnregisterEvent("READY_CHECK_FINISHED")
-						bReadyCheck:UnregisterEvent("READY_CHECK_CONFIRM")
-
-						if bReadyCheck.buffFrame then
-							bReadyCheck.buffFrame:Hide()
-						end
-					end
-
-					LibStub("AceConfigRegistry-3.0"):NotifyChange("bReadyCheck")
-				end,
 				order = 1,
-				width = "full",
-			},
+				args = {
+					enabled = {
+						type = "toggle",
+						name = GetEnabledText,
+						--desc = "Включить/выключить функциональность аддона",
+						desc = L["EnableDesc"],
+						get = function()
+							return bReadyCheck.db.profile.enabled
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.enabled = val
 
-			onlyForRL = {
-				type = "toggle",
-				--name = "Только для рейд-лидера",
-				name = L["OnlyRL"],
-				desc = L["OnlyRLDesc"],
-				--desc = "Показывать информацию только рейд-лидеру иили ассистентам."
-				get = function()
-					return bReadyCheck.db.profile.onlyForRL
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.onlyForRL = val
-				end,
-				order = 2,
-				width = "full",
-			},
+							if val then
+								bReadyCheck:RegisterEvent("READY_CHECK", "OnReadyCheck")
+								bReadyCheck:RegisterEvent("READY_CHECK_FINISHED", "OnReadyCheckFinished")
+								bReadyCheck:RegisterEvent("READY_CHECK_CONFIRM", "OnReadyCheckConfirm")
+							else
+
+								bReadyCheck:UnregisterEvent("READY_CHECK")
+								bReadyCheck:UnregisterEvent("READY_CHECK_FINISHED")
+								bReadyCheck:UnregisterEvent("READY_CHECK_CONFIRM")
+
+								if bReadyCheck.buffFrame then
+									bReadyCheck.buffFrame:Hide()
+								end
+							end
+
+							LibStub("AceConfigRegistry-3.0"):NotifyChange("bReadyCheck")
+						end,
+						order = 1,
+						width = "full",
+					},
+
+					onlyForRL = {
+						type = "toggle",
+						--name = "Только для рейд-лидера",
+						name = L["OnlyRL"],
+						desc = L["OnlyRLDesc"],
+						--desc = "Показывать информацию только рейд-лидеру иили ассистентам."
+						get = function()
+							return bReadyCheck.db.profile.onlyForRL
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.onlyForRL = val
+						end,
+						order = 2,
+						width = "full",
+					},
 			
-			sortByClass = {
-				type = "toggle",
-				--name = "Сортировка по классам",
-				name = L["SortByClass"],
-				desc = L["SortByClassDesc"],
-				--desc = "При включении игроки будут отображаться отсортированными по классам",
-				get = function()
-					return bReadyCheck.db.profile.sortByClass
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.sortByClass = val
-					--bReadyCheck:UpdateRoster(true)
-				end,
-				order = 3,
-				width = "full",
-			},			
+					sortByClass = {
+						type = "toggle",
+						--name = "Сортировка по классам",
+						name = L["SortByClass"],
+						desc = L["SortByClassDesc"],
+						--desc = "При включении игроки будут отображаться отсортированными по классам",
+						get = function()
+							return bReadyCheck.db.profile.sortByClass
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.sortByClass = val
+							--bReadyCheck:UpdateRoster(true)
+						end,
+						order = 3,
+						width = "full",
+					},
 
-			scale = {
-				type = "range",
-				name = L["FrameScale"],
-				min = 0.1,
-				max = 2,
-				step = 0.05,
-				get = function()
-					return bReadyCheck.db.profile.scale
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.scale = val
-					
-					if bReadyCheck.buffFrame then
-						local frame = bReadyCheck.buffFrame
+					scale = {
+						type = "range",
+						name = L["FrameScale"],
+						min = 0.1,
+						max = 2,
+						step = 0.05,
+						get = function()
+							return bReadyCheck.db.profile.scale
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.scale = val
+							
+							if bReadyCheck.buffFrame then
+								local frame = bReadyCheck.buffFrame
 
-						local oldScale = frame:GetScale()
-						local left = frame:GetLeft()
-						local top = frame:GetTop()
-						if not (left and top and oldScale) then return end
+								local oldScale = frame:GetScale()
+								local left = frame:GetLeft()
+								local top = frame:GetTop()
+								if not (left and top and oldScale) then return end
 
-						local uiScale = UIParent:GetScale()
-						local absLeft = left * oldScale / uiScale
-						local absTop = top * oldScale / uiScale
+								local uiScale = UIParent:GetScale()
+								local absLeft = left * oldScale / uiScale
+								local absTop = top * oldScale / uiScale
 
-						frame:SetScale(val)
+								frame:SetScale(val)
 
-						local newLeft = absLeft * uiScale / val
-						local newTop = absTop * uiScale / val
+								local newLeft = absLeft * uiScale / val
+								local newTop = absTop * uiScale / val
 
-						frame:ClearAllPoints()
-						frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", newLeft, newTop)
-					end
-				end,
-				width = "full",
-				order = 4,
-			},
+								frame:ClearAllPoints()
+								frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", newLeft, newTop)
+							end
+						end,
+						width = "full",
+						order = 4,
+					},
 			
-			flaskExpireOption = {
-				type = "select",
-				--name = "Показывать заканчивающиеся фласки",
-				name = L["MinFlaskExp"],
-				desc = L["MinFlaskExpDesc"],
-				--desc = "Выберите, за сколько минут до окончания фласок показывать предупреждение",
-				values = {
-					[0] = L["MinFlaskExpNo"],
-					[5] = "5 " .. L["MinFlaskExpMin"],
-					[10] = "10 " .. L["MinFlaskExpMin"],
+					disappearDelay = {
+						type = "range",
+						--name = "Время в секундах, через которое окно исчезает после окончания проверки",
+						name = L["TimerTooltip"],
+						min = 0,
+						max = 180,
+						step = 1,
+						bigStep = 5,
+						get = function()
+							return bReadyCheck.db.profile.ReadyCheckFadeDelay or 10
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.ReadyCheckFadeDelay = val
+						end,
+						width = "full",
+						order = 5,
+					},
 				},
-				sorting = { 0, 5, 10 },
-				get = function()
-					return bReadyCheck.db.profile.flaskExpireOption or 0
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.flaskExpireOption = val
-				end,
-				style = "radio",
-				width = "full",
-				order = 5,
 			},
 			
-			disappearDelay = {
-				type = "range",
-				--name = "Время в секундах, через которое окно исчезает после окончания проверки",
-				name = L["TimerTooltip"],
-				min = 0,
-				max = 180,
-				step = 1,
-				bigStep = 5,
-				get = function()
-					return bReadyCheck.db.profile.ReadyCheckFadeDelay or 10
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.ReadyCheckFadeDelay = val
-				end,
-				width = "full",
-				order = 6,
+--2=============================================
+
+			Buffs = {
+				type = "group",
+				name = L["BuffSettings"],
+				order = 2,
+				args = {
+					flaskExpireOption = {
+						type = "select",
+						--name = "Показывать заканчивающиеся фласки",
+						name = L["MinFlaskExp"],
+						desc = L["MinFlaskExpDesc"],
+						--desc = "Выберите, за сколько минут до окончания фласок показывать предупреждение",
+						values = {
+							[0] = L["MinFlaskExpNo"],
+							[5] = "5 " .. L["MinFlaskExpMin"],
+							[10] = "10 " .. L["MinFlaskExpMin"],
+						},
+						sorting = { 0, 5, 10 },
+						get = function()
+							return bReadyCheck.db.profile.flaskExpireOption or 0
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.flaskExpireOption = val
+						end,
+						style = "radio",
+						width = "full",
+						order = 1,
+					},
+					
+					showSourceName = {
+						type = "toggle",
+						name = L["ShowSourceName"],          -- Перевод в твоём локализации
+						desc = L["ShowSourceNameDesc"],      -- Описание в локализации
+						get = function()
+							return bReadyCheck.db.profile.showSourceName
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.showSourceName = val
+						end,
+						order = 2,          -- Порядок отображения
+						width = "full",
+					},
+				},
 			},
 			
-			spacerFonts = {
-				type = "description",
-				name = "\n",
-				order = 7,
-			},
-			
-			fontHeader = {
-				type = "header",
+--3=============================================
+
+			Font = {
+				type = "group",
 				name = L["FontSettings"],
-				order = 8,
-			},
-
-			fontSelect = {
-				type = "select",
-				--name = "Выбор шрифта",
-				name = L["Fonts"],
-				desc = L["FontsDesc"],
-				--desc = "Выберите шрифт для отображения текста",
-				values = function()
-					return GenerateFontOptions()
-				end,
-				get = function()
-					return bReadyCheck.db.profile.fontKey or "default"
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.fontKey = val
-					bReadyCheck.db.profile.fontPath = getFontPath(val)
-					bReadyCheck:UpdateFont()
-				end,
-				width = "full",
-				order = 9,
-			},
+				order = 3,
+				args = {
+					fontSelect = {
+						type = "select",
+						--name = "Выбор шрифта",
+						name = L["Fonts"],
+						desc = L["FontsDesc"],
+						--desc = "Выберите шрифт для отображения текста",
+						values = function()
+							return GenerateFontOptions()
+						end,
+						get = function()
+							return bReadyCheck.db.profile.fontKey or "default"
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.fontKey = val
+							bReadyCheck.db.profile.fontPath = getFontPath(val)
+							bReadyCheck:UpdateFont()
+						end,
+						width = "full",
+						order = 1,
+					},
 			
-			fontSize = {
-				type = "range",
-				name = L["FontSize"],
-				--desc = L["FontSizeDesc"],
-				min = 8,
-				max = 32,
-				step = 1,
-				get = function()
-					return bReadyCheck.db.profile.fontSize or 12
-				end,
-				set = function(_, val)
-					bReadyCheck.db.profile.fontSize = val
-					bReadyCheck:UpdateFont()
-				end,
-				width = "full",
-				order = 10,
+					fontSize = {
+						type = "range",
+						name = L["FontSize"],
+						--desc = L["FontSizeDesc"],
+						min = 8,
+						max = 32,
+						step = 1,
+						get = function()
+							return bReadyCheck.db.profile.fontSize or 12
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.fontSize = val
+							bReadyCheck:UpdateFont()
+						end,
+						width = "full",
+						order = 2,
+					},
+				},
 			},
-
         },
     }
+	--===========================
+
 
     AceConfig:RegisterOptionsTable("bReadyCheck", options)
     AceConfigDialog:AddToBlizOptions("bReadyCheck", "bReadyCheck")

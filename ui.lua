@@ -38,6 +38,7 @@ bReadyCheck.tableFlask = {
 	[53746]=true,	[60345]=true,	[53764]=true,	[53748]=true,	[60344]=true,	[60341]=true,	[53763]=true,	[53751]=true,
 	[60340]=true,	[53747]=true,	[60343]=true,	[63729]=true,
 	--[168]=true,	--тест
+	[673]=true,
 }
 
 --бафы
@@ -543,7 +544,31 @@ local function BRD_LineOnLeave(self)
 		GameTooltip_Hide()
 	end
 end
+--=============
+local function AddSourceNameToTooltip(tooltip, unit, index, filter)  --sourceName
+	if not bReadyCheck.db.profile.showSourceName then
+        return
+    end
+	
+	local srcUnit = select(8, UnitAura(unit, index, filter))
+	if not srcUnit then return end
 
+	if srcUnit == "pet" or srcUnit == "vehicle"
+		or srcUnit:match("^partypet%d+$")
+		or srcUnit:match("^raidpet%d+$")
+	then
+		return
+	end
+
+	tooltip:AddLine(" ")
+	local src = GetUnitName(srcUnit)
+	tooltip:AddLine("" .. src)
+	tooltip:Show()
+end
+--------------
+
+
+--============
 	--иконка
 function CreateFullIcon(parent, texturePath, size)
 	local icon = CreateFrame("Frame", nil, parent)
@@ -558,11 +583,15 @@ function CreateFullIcon(parent, texturePath, size)
 	-- tooltip
 	icon:SetScript("OnEnter", function(self)
 		if self.tooltip then
+			local unit = self:GetParent().unit ----------------------------------------
 			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 			if type(self.tooltip) == "string" and self.tooltip:find("^spell:") then
+			--print("SetHyperlink")
 				GameTooltip:SetHyperlink(self.tooltip)
 			else
+			--print("SetUnitAura")
 				GameTooltip:SetUnitAura(self:GetParent().unit, self.tooltip, "HELPFUL")
+				AddSourceNameToTooltip(GameTooltip, unit, self.tooltip, "HELPFUL")
 			end
 			GameTooltip:Show()
 		end
@@ -1233,8 +1262,9 @@ function bReadyCheck:UpdateData(onlyLine)
 
 						line[key].texture:SetTexture(icon)
 						line[key].text:SetText(val or "")
-						line[key].tooltip = "spell:"..spellId
-						line[key].auraIndex = i  
+						--line[key].tooltip = "spell:"..spellId
+						line[key].tooltip = i 
+						--line[key].auraIndex = i  
 --================================================				прозрачность, иконки если время действия бафа меньше 10 минут	
 						if expirationTime then
 							local timeLeft = expirationTime - GetTime()

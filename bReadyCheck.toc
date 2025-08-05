@@ -1,6 +1,6 @@
 ## Interface: 30300
-## Title: bReadyCheck
-## Version: 1.0.0
+## Title: |cFF9482C9b|cFF9A89CBR|cFFA090CDe|cFFA697CFa|cFFAC9ED1d|cFFB2A5D3y|cFFB8ACD5C|cFFB9B1D9h|cFFBAB6DDe|cFFBBBAE1c|cFFB2BAECk|r
+## Version: 1.0.1
 ## Author: Bianconeri
 ## Notes: bReadyCheck
 

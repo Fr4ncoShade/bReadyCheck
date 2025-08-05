@@ -7,7 +7,7 @@ if L then
     L["READY_CHECK"] = "Ready Check"
 	L["SECONDS"] = " (%s sec.)" 
 	L["Enable"] = "Enable"
-	L["General Settings"] = "General Settings"
+	L["General Settings"] = "General"
 	L["EnableDesc"] = "Enable/disable bReadyCheck"
 	L["OnlyRL"] = "Only for raid leader"
 	L["OnlyRLDesc"] = "Show info only to raid leader or assistants"
@@ -24,6 +24,11 @@ if L then
 	L["NeedGroupOrRaid"] = "You have to be in a party or raid"
 	L["FontSize"] = "Font size"
 	L["FontSettings"] = "Font"
+	L["BuffSettings"] = "Buffs"
+	
+	L["ShowSourceName"] = "Display who applied the buff"
+	L["ShowSourceNameDesc"] = "Show the name of the buff's source in the tooltip"
+
 	
 end
 --[[
