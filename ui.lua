@@ -278,6 +278,56 @@ local RCW_iconsListDebugIcons = {
     "Interface\\Icons\\Spell_Holy_WordFortitude",		-- stam
 }
 
+--===================
+function bReadyCheck:SaveFramePosition(frame)
+	local left = frame:GetLeft()
+	local top = frame:GetTop()
+	local scale = frame:GetScale()
+	local uiScale = UIParent:GetScale()
+
+	if left and top and scale then
+		local absLeft = left * scale / uiScale
+		local absTop = top * scale / uiScale
+		self.db.profile.framePos = { left = absLeft, top = absTop }
+	end
+end
+
+function bReadyCheck:RestoreFramePosition(frame, scale)
+	local pos = self.db.profile.framePos
+	local uiScale = UIParent:GetScale()
+
+	if pos and pos.left and pos.top then
+		local scaledLeft = pos.left * uiScale / scale
+		local scaledTop = pos.top * uiScale / scale
+		frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", scaledLeft, scaledTop)
+	else
+		frame:SetPoint("CENTER")
+	end
+end
+
+function bReadyCheck:ApplyScaleAndPosition(frame, newScale)
+	local oldScale = frame:GetScale()
+	local uiScale = UIParent:GetScale()
+	local left = frame:GetLeft()
+	local top = frame:GetTop()
+
+	if left and top and oldScale then
+		local absLeft = left * oldScale / uiScale
+		local absTop = top * oldScale / uiScale
+
+		frame:SetScale(newScale)
+		self.db.profile.scale = newScale
+
+		local newLeft = absLeft * uiScale / newScale
+		local newTop = absTop * uiScale / newScale
+
+		frame:ClearAllPoints()
+		frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", newLeft, newTop)
+
+		self.db.profile.framePos = { left = absLeft, top = absTop }
+	end
+end
+
 function bReadyCheck:CreateMainFrame()
     if self.buffFrame then
 		return
@@ -285,23 +335,29 @@ function bReadyCheck:CreateMainFrame()
 
     local frame = CreateFrame("Frame", "bReadyCheckFrame", UIParent)
     self.buffFrame = frame
-
+	
+	local scale = self.db.profile.scale or 1
+	frame:SetScale(scale)
     frame:SetSize(700, 400)
-
+	
+	self:RestoreFramePosition(frame, scale)
+--[[
 	local pos = self.db.profile.framePos
 	if pos and pos.left and pos.top then
-		frame:ClearAllPoints()
-		frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", pos.left, pos.top)
+		local uiScale = UIParent:GetScale()
+		local scaledLeft = pos.left * uiScale / scale
+		local scaledTop = pos.top * uiScale / scale
+		frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", scaledLeft, scaledTop)
 	else
 		frame:SetPoint("CENTER")
 	end
-
+]]
 	frame:SetFrameStrata("DIALOG")
 	frame:SetClampedToScreen(true) -- ограничение, чтобы фрейм не выходил за пределы экрана
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:RegisterForDrag("LeftButton")
-
+--[[
 	frame:SetScript("OnDragStart", function(self)
 		self:StartMoving()
 	end)
@@ -311,15 +367,27 @@ function bReadyCheck:CreateMainFrame()
 
 		local left = self:GetLeft()
 		local top = self:GetTop()
+		local scale = self:GetScale()
+		local uiScale = UIParent:GetScale()
 
-		if left and top then
+		if left and top and scale then
+			local absLeft = left * scale / uiScale
+			local absTop = top * scale / uiScale
 			bReadyCheck.db.profile.framePos = {
-				left = left,
-				top = top,
+				left = absLeft,
+				top = absTop,
 			}
 		end
 	end)
-
+	]]
+	---------------------
+	frame:SetScript("OnDragStart", frame.StartMoving)
+	frame:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		bReadyCheck:SaveFramePosition(self)
+	end)
+	
+-------------------------
 	frame:SetScript("OnMouseDown", function(self,button) 
 		if button == "RightButton" then
 			self:Hide()
@@ -347,7 +415,7 @@ function bReadyCheck:CreateMainFrame()
 	shadow:SetPoint("TOP", 0, shadowSize)
 	shadow:SetPoint("BOTTOM", 0, -shadowSize)
 	shadow:SetBackdrop({
-		edgeFile = "Interface\\AddOns\\bReadyCheck\\media\\border\\shadow", -- путь к файлу тени
+		edgeFile = "Interface\\AddOns\\bReadyCheck\\media\\border\\shadow",
 		edgeSize = shadowEdgeSize,
 		insets = {
 			left = shadowSize,
@@ -404,11 +472,51 @@ function bReadyCheck:CreateMainFrame()
 		closeButton:SetScript("OnClick", function() frame:Hide() end)
 	end		
 
+	-- resize handle
+	local resizeHandle = CreateFrame("Button", nil, frame)
+	resizeHandle:SetSize(18, 18)
+	resizeHandle:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2)
+	resizeHandle:EnableMouse(true)
+	resizeHandle:SetFrameLevel(frame:GetFrameLevel() + 10)
+
+	resizeHandle.texture = resizeHandle:CreateTexture(nil, "OVERLAY")
+	resizeHandle.texture:SetAllPoints()
+
+	resizeHandle:SetNormalTexture("Interface\\AddOns\\bReadyCheck\\media\\resize")
+	resizeHandle:GetNormalTexture():SetVertexColor(0.7, 0.7, 0.7, 0.1)
+
+	resizeHandle:SetHighlightTexture("Interface\\AddOns\\bReadyCheck\\media\\resize")
+	resizeHandle:GetHighlightTexture():SetVertexColor(0.7, 0.7, 0.7, 0.7)
+
+	resizeHandle:SetPushedTexture("Interface\\AddOns\\bReadyCheck\\media\\resize")
+	resizeHandle:GetPushedTexture():SetVertexColor(1, 1, 1, 1) 
+
+	resizeHandle:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" then
+			self.startX = GetCursorPosition()
+			self.startScale = frame:GetScale()
+		end
+	end)
+
+	resizeHandle:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" then
+			self.startX = nil
+		end
+	end)
+
+	resizeHandle:SetScript("OnUpdate", function(self)
+		if self.startX then
+			local x = GetCursorPosition()
+			local delta = (x - self.startX) / 300
+			local newScale = math.max(0.1, math.min(2, self.startScale + delta))
+			bReadyCheck:ApplyScaleAndPosition(frame, newScale)
+		end
+	end)
+
 	self:CreateFadeOutAnimation(frame)
 	frame:Hide()
 end
 
---
 function bReadyCheck:ClearHeadTextTimer()
 	if self.buffFrame and self.buffFrame.headText then
 		local text = self.buffFrame.headText:GetText()
