@@ -110,7 +110,7 @@ function bReadyCheck:RegisterOptions()
 					enabled = {
 						type = "toggle",
 						name = GetEnabledText,
-						--desc = "Включить/выключить функциональность аддона",
+						--desc = "Включить/выключить",
 						desc = L["EnableDesc"],
 						get = function()
 							return bReadyCheck.db.profile.enabled
@@ -144,7 +144,7 @@ function bReadyCheck:RegisterOptions()
 						--name = "Только для рейд-лидера",
 						name = L["OnlyRL"],
 						desc = L["OnlyRLDesc"],
-						--desc = "Показывать информацию только рейд-лидеру иили ассистентам."
+						--desc = "Показывать информацию только рейд-лидеру иили ассистентам"
 						get = function()
 							return bReadyCheck.db.profile.onlyForRL
 						end,
@@ -261,15 +261,15 @@ function bReadyCheck:RegisterOptions()
 					
 					showSourceName = {
 						type = "toggle",
-						name = L["ShowSourceName"],          -- Перевод в твоём локализации
-						desc = L["ShowSourceNameDesc"],      -- Описание в локализации
+						name = L["ShowSourceName"],
+						desc = L["ShowSourceNameDesc"], 
 						get = function()
 							return bReadyCheck.db.profile.showSourceName
 						end,
 						set = function(_, val)
 							bReadyCheck.db.profile.showSourceName = val
 						end,
-						order = 2,          -- Порядок отображения
+						order = 2,
 						width = "full",
 					},
 				},
@@ -299,15 +299,41 @@ function bReadyCheck:RegisterOptions()
 							bReadyCheck.db.profile.fontPath = getFontPath(val)
 							bReadyCheck:UpdateFont()
 						end,
-						width = "full",
+						width = "hulf",
 						order = 1,
+					},
+
+					fontOutline = {
+						type = "select",
+						name = L["FontOutline"],
+						desc = L["FontOutlineDesc"],
+						values = {
+							NONE = "None",
+							OUTLINE = "Outline",
+							THICKOUTLINE = "Thick Outline",
+						},
+						get = function()
+							return bReadyCheck.db.profile.fontOutline or "NONE"
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.fontOutline = val
+							bReadyCheck:UpdateFont()
+						end,
+						width = "hulf",
+						order = 2,
+					},						
+
+					fontSpacer = {
+						type = "description",
+						name = "\n", 
+						order = 3,
 					},
 			
 					fontSize = {
 						type = "range",
 						name = L["FontSize"],
 						--desc = L["FontSizeDesc"],
-						min = 8,
+						min = 6,
 						max = 32,
 						step = 1,
 						get = function()
@@ -317,9 +343,24 @@ function bReadyCheck:RegisterOptions()
 							bReadyCheck.db.profile.fontSize = val
 							bReadyCheck:UpdateFont()
 						end,
-						width = "full",
-						order = 2,
+						width = "hulf",
+						order = 4,
 					},
+					
+					fontShadow = {
+						type = "toggle",
+						name = L["FontShadow"],
+						--desc = L["FontShadowDesc"],
+						get = function()
+							return bReadyCheck.db.profile.fontShadow
+						end,
+						set = function(_, val)
+							bReadyCheck.db.profile.fontShadow = val
+							bReadyCheck:UpdateFont()
+						end,
+						width = "hulf",
+						order = 5,
+					},			
 				},
 			},
         },

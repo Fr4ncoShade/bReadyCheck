@@ -5,28 +5,28 @@ local L = LibStub("AceLocale-3.0"):GetLocale("bReadyCheck")
 
 --еда
 bReadyCheck.tableFood = {
-	[57367]=true,	-- Blackened Dragonfin (agility)
-	[57327]=true,	-- Tender Shoveltusk Steak / Firecracker Salmon (spd)
+	[57367]=true,	-- Blackened Dragonfin (agility +40)
+	[57327]=true,	-- Tender Shoveltusk Steak / Firecracker Salmon (spd +46)
 	[57139]=true,	-- Shoveltusk Steak (spd)
 	[57097]=true,	--спд
-	[57356]=true,	-- экспертиза
-	[57334]=true,	--стамина	
+	[57356]=true,	-- Rhinolicious Wormsteak (expertise +40)
+	[57334]=true,	--Mighty Rhino Dogs / Spicy Fried Herring(mp5 +20)
 	[57107]=true,	--стамина
-	[57329]=true,	--крит
+	[57329]=true,	-- Spiced Worm Burger / Spicy Blue Nettlefish (crit +40)
 	[57286]=true,	--крит
 	[57100]=true,	--крит
-	[57332]=true,	--хаст	
+	[57332]=true,	-- Imperial Manta Steak / Very Burnt Worg (haste +40)
 	[57102]=true,	--хаст	
 	[57288]=true,	--хаст
-	[57365]=true,	--дух
+	[57365]=true,	-- Cuttlesteak (spirit +40)
 	[53284]=true,	--Steaming Chicken Soup (spirit +25)
-	[57325]=true,	--ап	
+	[57325]=true,	-- Mega Mammoth Meal / Poached Northern Sculpin (ap +40)	
 	[57079]=true,	--ап	
 	[57111]=true,	--ап
-	[57371]=true,	--сила
-	[57360]=true,	--хит
-	[57291]=true,	-- Rhino Dogs (mp5)	
-	[57358]=true,	--рпб
+	[57371]=true,	-- Dragonfin Filet (ыtrength +40)
+	[57360]=true,	-- Snapper Extreme / Worg Tartare (hit +40)
+	[57291]=true,	-- Rhino Dogs (mp5 +15) LQ	
+	[57358]=true,	-- Hearty Rhino (arp +40)
 	[57399]=true,	-- Fish Feast
 	[53563]=true,	--тест
 }
@@ -855,6 +855,7 @@ function bReadyCheck:CreateLines()
 end
 
 	--замена шрифта
+	--[[
 function bReadyCheck:UpdateFont()
 	local frame = self.buffFrame
 	if not frame or not frame.lines then
@@ -865,11 +866,13 @@ function bReadyCheck:UpdateFont()
 	--local fontPath = self.db.profile.fontPath or "Fonts\\FRIZQT__.TTF"
 	local fontPath = self.db.profile.fontPath or "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf"
 	local fontSize = self.db.profile.fontSize or 12
+	local fontOutline = self.db.profile.fontOutline or "NONE"
 
 	for i = 1, 40 do
 		local line = frame.lines[i]
 		if line and line.name then
-			line.name:SetFont(fontPath, fontSize)
+			--line.name:SetFont(fontPath, fontSize)
+			line.name:SetFont(fontPath, fontSize, fontOutline)
 		end
 
 		for j, key in ipairs(RCW_iconsList) do
@@ -884,6 +887,57 @@ function bReadyCheck:UpdateFont()
 		frame.headText:SetFont(fontPath, fontSize + 4, "OUTLINE")
 	end
 end
+]]
+
+--==============
+function bReadyCheck:UpdateFont()
+	local frame = self.buffFrame
+	if not frame or not frame.lines then
+		return
+	end
+
+	local fontKey = self.db.profile.fontKey or "default"
+	local fontPath = self.db.profile.fontPath or "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf"
+	local fontSize = self.db.profile.fontSize or 12
+	local fontOutline = self.db.profile.fontOutline or "NONE"
+	local enableShadow = self.db.profile.fontShadow
+
+	local function ApplyFontSettings(fontString, size, outline)
+		if fontString then
+			fontString:SetFont(fontPath, size, outline or fontOutline)
+			if enableShadow then
+				fontString:SetShadowColor(0, 0, 0, 0.8)
+				fontString:SetShadowOffset(1, -1)
+			else
+				fontString:SetShadowOffset(0, 0)
+			end
+		end
+	end
+
+	for i = 1, 40 do
+		local line = frame.lines[i]
+		if line and line.name then
+			ApplyFontSettings(line.name, fontSize)
+		end
+
+		for _, key in ipairs(RCW_iconsList) do
+			local icon = line[key]
+			if icon and icon.bigText then
+				ApplyFontSettings(icon.bigText, fontSize - 2)
+			end
+		end
+	end
+
+	-- Заголовок всегда с OUTLINE
+	if frame.headText then
+		ApplyFontSettings(frame.headText, fontSize + 4, "OUTLINE")
+	end
+end
+
+----------------
+
+
+--==============
 
 	--полоса с обратным отсчетом
 function bReadyCheck:CreateTimeLine()

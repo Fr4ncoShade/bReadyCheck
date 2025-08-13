@@ -11,13 +11,16 @@ local defaults = {
 		enabled = true,
 		onlyForRL = false,
 		showSourceName = false,
-		scale = 0.8,
+		scale = 0.9,
 		flaskExpireOption = 0,
 		ReadyCheckFadeDelay = 10,
 		
 		fontKey = "default", 
 		fontPath = "Interface\\AddOns\\bReadyCheck\\media\\fonts\\default.ttf", 
 		fontSize = 12,
+		fontOutline = "NONE",
+		fontShadow = true,
+		
 		sortByClass = false,	
 	}
 }
@@ -98,38 +101,3 @@ function bReadyCheck:OnEnable()
 		self:RegisterEvent("ADDON_LOADED")
 	end
 end
---[[
-function bReadyCheck:OnReadyCheck()
-print("[bReadyCheck] OnReadyCheck: start")
-	self:CreateMainFrame()
-	self.buffFrame.isManualOpen = false
-	self.buffFrame:Show()
-	
-
-	self:CreateFadeOutAnimation()
-	self:CreateLines()
-	self:CreateIconHeaders()
-	self:UpdateLinesSize(true)
-
-	if self.buffFrame and self.buffFrame.timeLeftLine and self.buffFrame.timeLeftLine.Start then
-		self.buffFrame.timeLeftLine:Start(30)
-	end
-
-	self:UpdateRoster(false)
-	self:UpdateData()
-	self:OnBuffFrameEvent()
-
-	self.db.profile.RaidCheckReadyCheckTime = GetTime() + 30
-	self.db.profile.ReadyCheckEnded = false
-	
-	self.buffFrame:SetAlpha(1)
-
-end
-]]
-
---[[
-function bReadyCheck:OnReadyCheckFinished()
-	self:Print("Готовность завершена!")
-	self:PrepToHide()
-end
-]]

@@ -28,6 +28,13 @@ if L then
 	
 	L["ShowSourceName"] = "Display who applied the buff"
 	L["ShowSourceNameDesc"] = "Show the name of the buff's source in the tooltip"
+	
+	L["FontOutline"] = "Outline"
+	L["FontOutlineDesc"] = "Choose outline style for the font"
+	L["FontShadow"] = "Font Shadow"
+	L["FontShadowDesc"] = "Enable shadow behind the font"
+
+	
 
 	
 end
