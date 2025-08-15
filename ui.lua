@@ -1028,7 +1028,15 @@ function bReadyCheck:CreateTimeLine()
 		line.readyCount:SetAlpha(1)
 		stop = nil
 		self:Show()
-		self.readyCount:Show()
+		
+--=============================
+		if IsRaidLeader() or IsRaidOfficer() or IsPartyLeader() then
+			self.readyCount:Show()
+		else
+			self.readyCount:Hide()
+		end
+--===================================		
+		--self.readyCount:Show()
 	end
 		
 	line:SetScript("OnHide",function(self)
@@ -1073,10 +1081,17 @@ function bReadyCheck:CreateTimeLine()
 
 	line.SetProgress = function(self,total,totalResponced)
 		local progress = totalResponced / max(total,1)
+--=====================
+if not (IsRaidLeader() or IsRaidOfficer() or IsPartyLeader()) then
+        return
+    end
+--=====================		
+		
 		if progress == 0 then
 			self.readyCount:SetText(totalResponced.."/"..total)
 			return
 		end
+		
 		local fR,fG,fB
 		local tR,tG,tB
 		if progress >= .66 then
